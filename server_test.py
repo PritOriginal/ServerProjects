@@ -127,7 +127,7 @@ def login():
             mentor = 0
             if row[i][6] == "IT":
                 mentor = 1
-            data = {"request": "true", "id": str(row[i][0]), "mentor": mentor, "name": str(row[i][4]), "secondname": str(row[i][3])}
+            data = {"request": "true", "id": str(row[i][0]), "mentor": mentor, "name": str(row[i][4]), "secondname": str(row[i][3]), "vk": str(row[i][8])}
             connect = True
         i = i + 1
     if not connect:
@@ -149,7 +149,7 @@ def allUsers():
     while i < len(row):
         # data = {"name": str(row[i][1]).replace("\n", ""), "count": str(row[i][2]), "image": str(row[i][4])}
         data = {"id": str(row[i][0]), "login": str(row[i][1]), "password": str(row[i][2]), "secondname": str(row[i][3]),
-                "name": str(row[i][4]), "patronymic": str(row[i][5]), "role": str(row[i][6]), "class": str(row[i][7])}
+                "name": str(row[i][4]), "patronymic": str(row[i][5]), "role": str(row[i][6]), "class": str(row[i][7]), "vk": str(row[i][8])}
         if len(row) - 1 == i and i != 0:
             s += json.dumps(data)
         elif i == 0 and len(row) - 1 == 0:
@@ -168,7 +168,8 @@ def getUser():
     cursor.execute("SELECT * FROM users WHERE id=?", [id])
     row = cursor.fetchall()
     data = {"id": str(row[0][0]), "login": str(row[0][1]), "password": str(row[0][2]), "secondname": str(row[0][3]),
-            "name": str(row[0][4]), "patronymic": str(row[0][5]), "role": str(row[0][6]) , "class": str(row[0][7])}
+            "name": str(row[0][4]), "patronymic": str(row[0][5]), "role": str(row[0][6]), "class": str(row[0][7]),
+            "vk": str(row[0][8])}
     s = json.dumps(data)
     print(s)
 
@@ -195,11 +196,12 @@ def getStudents():
 
 def getTimeGroup():
     id = int(text2)
-    cursor.execute("SELECT * FROM groups WHERE id =?", [id]);
+    cursor.execute("SELECT * FROM groups WHERE id=?", [id])
     row = cursor.fetchall()
-    data = {"time": str(row[1])}
+    data = {"time": str(row[0][1]), "day_week": str(row[0][2])}
     s = json.dumps(data)
     print(s)
+
 
 def addUser():
     # / data = client_sock.recv(1024)
@@ -890,7 +892,7 @@ def getTeammates():
     while i < len(row):
         cursor.execute("SELECT * FROM users WHERE id=?", [int(str(row[i][1]))])
         teammates = cursor.fetchall()
-        data = {"id": str(row[i][0]), "secondname": teammates[0][3], "name": teammates[0][4], "role": str(row[i][3])}
+        data = {"id": str(row[i][0]), "secondname": teammates[0][3], "name": teammates[0][4], "role": str(row[i][3]), "vk": str(teammates[i][8])}
         if len(row) - 1 == i and i != 0:
             s += json.dumps(data)
         elif i == 0 and len(row) - 1 == 0:
