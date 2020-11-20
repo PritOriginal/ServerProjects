@@ -828,7 +828,7 @@ def changeProject():
 def setCompleteProject():
     id = text2
     completed = text14
-    cursor.execute("UPDATE objectives SET checked=? WHERE id =?", (eval(completed), id))
+    cursor.execute("UPDATE projects SET completed=? WHERE id =?", (eval(completed), id))
     conn.commit()
     data = {"request": "ok"}
     s = json.dumps(data)
