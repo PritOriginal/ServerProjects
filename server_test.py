@@ -1,4 +1,4 @@
-#!C:\Program Files (x86)\Python36-32\python.exe
+#!C:\Users\Stepan\AppData\Local\Programs\Python\Python37-32\python.exe
 # -*- coding: utf-8 -*-
 import sqlite3
 import socket
@@ -905,6 +905,68 @@ def getTeammates():
     print('{ "teammates": [' + s + "]}")
 
 
+# ================================================ Команды тестов
+
+
+def createTest():
+    name = text3
+    data = text11
+    questions = []
+    answers = []
+    correct = []
+    data_ = ""
+    j = 0
+    i = 0
+    answers_ = []
+    correct_ = []
+    while i < len(data):
+        if data[i] != '/':
+            data_ += data[i]
+        else:
+            if data[i + 1] == '/' and data[i + 2] == '/' and j == 2:
+                correct_.append(data_)
+                answers.append(answers_)
+                correct.append(correct_)
+                answers_ = []
+                correct_ = []
+                data_ = ""
+                j = 0
+                i = i + 2
+            elif data[i + 1] == '/':
+                if j == 0:
+                    questions.append(data_)
+                    data_ = ""
+                    j = 1
+                elif j == 1:
+                    answers_.append(data_)
+                    data_ = ""
+                    j = 2
+                elif j == 2:
+                    correct_.append(data_)
+                    data_ = ""
+                    j = 1
+                i = i + 1
+        i = i + 1
+    id = []
+    id_ = ""
+    for answer, corr in zip(answers, correct):
+        for index in range(len(answer)):
+            cursor.execute("INSERT INTO answers (answer, correct) VALUES (?,?)", (answer[index], corr[index]))
+            id_ = id_ + str(cursor.lastrowid) + ','
+        id_ = id_[:-1]
+        id.append(id_)
+        id_ = ""
+    id_questions = ""
+    for question, id_answers in zip(questions, id):
+        cursor.execute("INSERT INTO questions (question, id_answers) VALUES (?,?)", (question, id_answers))
+        id_questions = id_questions + str(cursor.lastrowid) + ','
+    id_questions = id_questions[:-1]
+    cursor.execute("INSERT INTO tests (name, id_questions) VALUES (?,?)", (name, id_questions))
+    conn.commit()
+    data = {"request": "ok"}
+    s = json.dumps(data)
+    print(s)
+
 
 '''
 def getTeammates():
@@ -1034,6 +1096,9 @@ if data == "addTeammate":
     addTeammate()
 if data == "getTeammates":
     getTeammates()
+
+if data == "createTest":
+    createTest()
 
 """
 
