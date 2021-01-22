@@ -1,4 +1,4 @@
-#!C:\Users\Stepan\AppData\Local\Programs\Python\Python37-32\python.exe
+#!C:\Program Files (x86)\Python36-32\python.exe
 # -*- coding: utf-8 -*-
 import sqlite3
 import socket
@@ -968,6 +968,103 @@ def createTest():
     print(s)
 
 
+def getTestsUser():
+    id = text2
+    cursor.execute("SELECT * FROM user_tests WHERE id_user=?", [id])
+    tests = cursor.fetchall()
+    i = 0
+    while i < len(tests):
+        cursor.execute("SELECT * FROM tests WHERE id=?", [tests[i][2]])
+        test = cursor.fetchall()
+        data = {"id": str(test[0][0]), "name": test[0][1],
+                "completed": tests[i][3]}
+        if len(tests) - 1 == i and i != 0:
+            s += json.dumps(data)
+        elif i == 0 and len(tests) - 1 == 0:
+            s = json.dumps(data)
+        elif i == 0:
+            s = json.dumps(data) + ','
+        else:
+            s += json.dumps(data) + ','
+        i = i + 1
+    print('{ "tests": [' + s + "]}")
+
+def getTest():
+    id = text2
+    cursor.execute("SELECT * FROM tests WHERE id=?", [id])
+    test = cursor.fetchall()
+    q = ""
+    t = ""
+    id_question = []
+    id_ = test[0][2]
+    idQuest = ""
+    i = 0
+    while i < len(id_):
+        if id_.find(",") == -1:
+            k = 0
+            while k < len(id_):
+                idQuest += id_[k]
+                k = k + 1
+            id_question.append(int(idQuest))
+        elif i == len(id_) - 1:
+            idQuest += id_[i]
+            id_question.append(int(idQuest))
+        elif id_[i] != ',':
+            idQuest += id_[i]
+        else:
+            id_question.append(int(idQuest))
+            idQuest = ""
+        i = i + 1
+    i = 0
+    while i < len(id_question):
+        cursor.execute("SELECT * FROM questions WHERE id=?", [id_question[i]])
+        question = cursor.fetchall()
+        id_answer = []
+        id_ = question[0][2]
+        idAnsw = ""
+        j = 0
+        while j < len(id_):
+            if id_.find(",") == -1:
+                k = 0
+                while k < len(id_):
+                    idAnsw += id_[j]
+                    k = k + 1
+                id_answer.append(int(idAnsw))
+            elif j == len(id_) - 1:
+                idAnsw += id_[j]
+                id_answer.append(int(idAnsw))
+            elif id_[j] != ',':
+                idAnsw += id_[j]
+            else:
+                id_answer.append(int(idAnsw))
+                idAnsw = ""
+            j = j + 1
+        p = 0
+        while p < len(id_answer):
+            cursor.execute("SELECT * FROM answers WHERE id=?", [id_answer[p]])
+            answer = cursor.fetchall()
+            data = {"id": str(answer[0][0]), "answer": answer[0][1],
+                    "correct": answer[0][2]}
+            if len(id_answer) - 1 == p and p != 0:
+                s += json.dumps(data)
+            elif p == 0 and len(id_answer) - 1 == 0:
+                s = json.dumps(data)
+            elif p == 0:
+                s = json.dumps(data) + ','
+            else:
+                s += json.dumps(data) + ','
+            p = p + 1
+        q += '{"id": ' + str(question[0][0]) + ', "question": "' + question[0][1] + '", "answers": [' + s + ']}'
+        if i != len(id_question) - 1:
+            q += ','
+        #q = '"answers": [' + s + "]"
+        #data = {"id": str(question[0][0]), "question": question[0][1], "answers": s}
+        #q += json.dumps(data)
+        i = i + 1
+    q = '{"tests": [{"id": ' + str(test[0][0]) + ', "name": "' + test[0][1] + '", "questions": [' + q + "]}]}"
+    print(q)
+
+
 '''
 def getTeammates():
     id_project = int(text2)
@@ -1099,6 +1196,10 @@ if data == "getTeammates":
 
 if data == "createTest":
     createTest()
+if data == "getTestsUser":
+    getTestsUser()
+if data == "getTest":
+    getTest()
 
 """
 
