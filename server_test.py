@@ -976,6 +976,67 @@ def getTestsUser():
     while i < len(tests):
         cursor.execute("SELECT * FROM tests WHERE id=?", [tests[i][2]])
         test = cursor.fetchall()
+        '''
+        id_question = []
+        id_ = test[i][2]
+        idQuest = ""
+        l = 0
+        while l < len(id_):
+            if id_.find(",") == -1:
+                k = 0
+                while k < len(id_):
+                    idQuest += id_[k]
+                    k = k + 1
+                id_question.append(int(idQuest))
+            elif l == len(id_) - 1:
+                idQuest += id_[l]
+                id_question.append(int(idQuest))
+            elif id_[l] != ',':
+                idQuest += id_[l]
+            else:
+                id_question.append(int(idQuest))
+                idQuest = ""
+            l = l + 1
+        l = 0
+        while l < len(id_question):
+            cursor.execute("SELECT * FROM questions WHERE id=?", [id_question[l]])
+            question = cursor.fetchall()
+            id_answer = []
+            id_ = question[0][2]
+            idAnsw = ""
+            j = 0
+            while j < len(id_):
+                if id_.find(",") == -1:
+                    k = 0
+                    while k < len(id_):
+                        idAnsw += id_[j]
+                        k = k + 1
+                    id_answer.append(int(idAnsw))
+                elif j == len(id_) - 1:
+                    idAnsw += id_[j]
+                    id_answer.append(int(idAnsw))
+                elif id_[j] != ',':
+                    idAnsw += id_[j]
+                else:
+                    id_answer.append(int(idAnsw))
+                    idAnsw = ""
+                j = j + 1
+            p = 0
+            while p < len(id_answer):
+                cursor.execute("SELECT * FROM answers WHERE id=?", [id_answer[p]])
+                answer = cursor.fetchall()
+                data = {"id": str(answer[0][0]), "answer": answer[0][1],
+                        "correct": answer[0][2]}
+                if len(id_answer) - 1 == p and p != 0:
+                    s += json.dumps(data)
+                elif p == 0 and len(id_answer) - 1 == 0:
+                    s = json.dumps(data)
+                elif p == 0:
+                    s = json.dumps(data) + ','
+                else:
+                    s += json.dumps(data) + ','
+                p = p + 1
+'''
         data = {"id": str(test[0][0]), "name": test[0][1],
                 "completed": tests[i][3]}
         if len(tests) - 1 == i and i != 0:
@@ -1063,6 +1124,17 @@ def getTest():
         i = i + 1
     q = '{"tests": [{"id": ' + str(test[0][0]) + ', "name": "' + test[0][1] + '", "questions": [' + q + "]}]}"
     print(q)
+
+
+def sendTest():
+    id_user = text2
+    id_test = text13
+    id_answers = text11
+    cursor.execute("UPDATE user_tests SET id_answers=?, completed=? WHERE id_user=? AND id_test=?", (id_answers, 1, id_user, id_test))
+    conn.commit()
+    data = {"request": "ok"}
+    s = json.dumps(data)
+    print(s)
 
 
 '''
@@ -1200,6 +1272,8 @@ if data == "getTestsUser":
     getTestsUser()
 if data == "getTest":
     getTest()
+if data == "sendTest":
+    sendTest()
 
 """
 
